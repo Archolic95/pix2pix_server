@@ -1,5 +1,5 @@
 const SIZE = 256;
-let inputImg, currentImg, inputCanvas, output, statusMsg, pix2pix, clearBtn, transferBtn, currentColor, currentStroke;
+let inputImg, currentImg, inputCanvas, output, statusMsg, pix2pix, clearBtn, transferBtn, currentColor, currentStroke, currentRadius, randomFlag;
 
 var shapes_coord = []
 var shapes_colors = []
@@ -10,7 +10,7 @@ function setup() {
   inputCanvas.class('border-box').parent('input');
 
   // Display initial input image
-  inputImg = loadImage('images/blank.png', drawImage);
+  inputImg = loadImage('static/images/blank.png', drawImage);
   currentImg = inputImg;
 
   // Selcect output div container
@@ -20,11 +20,15 @@ function setup() {
   // Get the buttons
   currentColor = color(0, 0, 255);
   currentStroke = 0;
+  currentRadius = 20;
   select('#color_void').mousePressed(() => currentColor = color(255, 255, 255));
   select('#color_0').mousePressed(() => currentColor = color(0, 0, 255));
   select('#color_1').mousePressed(() => currentColor = color(0, 255, 0));
   select('#color_2').mousePressed(() => currentColor = color(255, 0, 0));
+  
 
+  // Change Stroke Weight
+  select("#customRange").changed(()=>currentRadius = document.getElementById("customRange").value);
   
   // Select 'transfer' button html element
   transferBtn = select('#transferBtn');
@@ -40,10 +44,10 @@ function setup() {
   });
 
   randomBtn.mousePressed(function() {
-    var nb = Math.floor(Math.random() * 3) + 1  
-    randImg = loadImage('images/random/'+nb+'.png', drawImage);
-    background(randImg);
-    redraw(); 
+    var nb = Math.floor(Math.random() * 3) + 1
+    window.console.log(nb);
+    randomImg = loadImage('static/images/'+nb+'.png', drawImage);
+    randomFlag = true;
   });
 
   transferBtn.mousePressed(function() {
@@ -51,20 +55,23 @@ function setup() {
   });
 }
 
-
+let responseString;
 let painting = false;
 let x_a
 let y_a
-let radius = 20
-
 // Draw on the canvas when mouse is pressed
 function draw(){
-
-  strokeWeight(20);
+  if(randomFlag)
+  {
+    background(currentImg);
+    randomFlag = false;
+  }
+  
+  strokeWeight(currentRadius);
   stroke(currentColor);
   if(mouseIsPressed){
-  fill(currentColor);
-   line(mouseX,mouseY,pmouseX,pmouseY) 
+    fill(currentColor);
+    line(mouseX,mouseY,pmouseX,pmouseY) 
   }
 }
 
@@ -86,22 +93,13 @@ function transfer() {
 
   var outString;
   var outImInf = inference(base64StringIn);
-  window.console.log(responseString);
+  //window.console.log(responseString);
 
   const outIm = document.getElementById("output");
   outIm.src = "data:image/png;base64,"+responseString;
-  var c = document.createElement('canvas');
-  c.height = outIm.naturalHeight;
-  c.width = outIm.naturalWidth;
-  window.console.log(c.height);
-  
-  var ctx = c.getContext('2d');
-
-  ctx.drawImage(outIm, 0, 0, 512, 512);
-
 }
 
-let responseString;
+
 async function inference(baseString) {
   // construct url for GET /solve/definition.gh?name=value(&...)
 
@@ -110,7 +108,7 @@ async function inference(baseString) {
   //Object.keys(data.inputs).forEach(key => url.searchParams.append(key, data.inputs[key]))
   var bodydata = JSON.stringify(imgData);
   //console.log(bodydata.toString());
-  console.log(bodydata);
+  //console.log(bodydata);
   
   try {
     const response = await fetch(url,{method:"POST",
@@ -120,17 +118,17 @@ async function inference(baseString) {
     },
     body: bodydata
     });
-  
+
+    //console.log(response);
     if(!response.ok) {
       // TODO: check for errors in response json
       throw new Error(response.statusText)
     }
 
     const responseJson = await response.json()
-    console.log(response);
-    console.log(responseJson.predicted);
-    
-    responseString = responseJson.predicted;
+    //console.log(responseJson);
+
+    responseString = JSON.parse(responseJson).predicted;
     //console.log(responseString);
 
   } catch(error) {
