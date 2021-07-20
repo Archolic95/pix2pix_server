@@ -31,6 +31,10 @@ try:
 except(termios.error):
     pass
 
+@app.route('/')
+def hello_world():
+    return 'Hello from Flask!'
+
 @app.route('/generate', methods=['POST'])
 def prediction_payload():
     #name = request.json['name']
