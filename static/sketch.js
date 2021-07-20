@@ -36,19 +36,19 @@ function setup() {
   // Select 'clear' button html element
   clearBtn = select('#clearBtn');
 
-  randomBtn = select('#randomBtn');
+  // randomBtn = select('#randomBtn');
 
   // Attach a mousePressed event to the 'clear' button
   clearBtn.mousePressed(function() {
     clearCanvas();
   });
 
-  randomBtn.mousePressed(function() {
-    var nb = Math.floor(Math.random() * 3) + 1
-    window.console.log(nb);
-    randomImg = loadImage('static/images/'+nb+'.png', drawImage);
-    randomFlag = true;
-  });
+  // randomBtn.mousePressed(function() {
+  //   var nb = Math.floor(Math.random() * 3) + 1
+  //   window.console.log(nb);
+  //   randomImg = loadImage('static/images/'+nb+'.png', drawImage);
+  //   randomFlag = true;
+  // });
 
   transferBtn.mousePressed(function() {
     transfer();
