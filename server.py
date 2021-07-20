@@ -8,6 +8,7 @@ import torch
 import torchvision
 import argparse
 import cv2
+import termios
 
 from options.test_options import TestOptions
 from models import pix2pix_model, networks
@@ -25,7 +26,10 @@ model.eval()
 
 print("model loaded!")
 
-app = Flask(__name__)
+try:
+    app = Flask(__name__)
+except(termios.error):
+    pass
 
 @app.route('/generate', methods=['POST'])
 def prediction_payload():
