@@ -34,7 +34,7 @@ def home():
 def prediction_payload():
     #name = request.json['name']
     #print(request.json)
-    s = request.json['image']
+    s = request.json['image'][0]
 
     imgdata = base64.b64decode(s)
     filename = 'some_image.jpg'  # I assume you have a way of picking unique filenames
@@ -43,12 +43,12 @@ def prediction_payload():
 
     #q = base64.decodebytes()
     input_image = np.asarray(Image.open('some_image.jpg').convert('RGB'))
-
+    print(f'Shape of input image is {input_image.shape}')
     input_transformed = np.transpose(((input_image/255.0)*2.0-1.0),(2,0,1))
     input_tensor = torch.FloatTensor(input_transformed).unsqueeze(0)
     
     out_img = util.tensor2im(model(input_tensor))
-    print(out_img.shape)
+    print(f'Shape of output image is {out_img.shape}')
     
     cv2.imwrite("output_image.jpg",out_img)
 
@@ -60,6 +60,7 @@ def prediction_payload():
     'Content-Type': 'application/json',  # This is important
     }
 
+    # print(req_file)
     payload = dumps({'predicted':req_file})
     return jsonify(payload)
 

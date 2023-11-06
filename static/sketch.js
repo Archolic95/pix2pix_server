@@ -103,7 +103,7 @@ function transfer() {
 async function inference(baseString) {
   // construct url for GET /solve/definition.gh?name=value(&...)
 
-  var imgData = {image: baseString};
+  var imgData = {image: [baseString]};
   const url = new URL('/generate/', window.location.origin);
   //Object.keys(data.inputs).forEach(key => url.searchParams.append(key, data.inputs[key]))
   var bodydata = JSON.stringify(imgData);
